@@ -1,6 +1,7 @@
-package dk.magical.routing
+package dk.magical.loom.routing
 
 import com.google.common.truth.Truth
+import dk.magical.loom.routing.PathParser
 import org.junit.Assert.*
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package dk.magical.request
+package dk.magical.loom.request
 
 /**
  * Created by Christian on 18/10/2016.

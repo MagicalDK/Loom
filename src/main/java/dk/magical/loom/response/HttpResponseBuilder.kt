@@ -1,15 +1,16 @@
-package dk.magical.response
+package dk.magical.loom.response
 
-import dk.magical.Status
+import dk.magical.loom.Status
 
 /**
  * Created by Christian on 25/10/2016.
  */
 object HttpResponseBuilder {
-    fun build(status: Status, body: String?): List<String> {
+    fun build(status: Status, headers: Map<String, String>, body: String?): List<String> {
         val list: MutableList<String> = mutableListOf()
-        list.add(statusLine(status))
-        list.add(contentLength(body))
+        list.add(HttpResponseBuilder.statusLine(status))
+        list.add(HttpResponseBuilder.contentLength(body))
+        list.addAll(headerLiners(headers))
         list.add("")
         if (body != null)
             list.add(body)
@@ -24,5 +25,9 @@ object HttpResponseBuilder {
     private fun contentLength(body: String?): String {
         val length = if (body == null) 0 else body.length
         return "Content-Length: ${length}"
+    }
+
+    private fun headerLiners(headers: Map<String, String>): List<String> {
+        return headers.map { "${it.key}: ${it.value}" }.toList()
     }
 }

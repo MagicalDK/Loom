@@ -1,6 +1,6 @@
-package dk.magical
+package dk.magical.loom
 
-import dk.magical.routing.Router
+import dk.magical.loom.routing.Router
 
 /**
  * Created by Christian on 21/10/2016.

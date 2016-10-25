@@ -1,6 +1,6 @@
-package dk.magical.request
+package dk.magical.loom.request
 
-import dk.magical.routing.PathParser
+import dk.magical.loom.routing.PathParser
 import java.io.BufferedReader
 
 /**
@@ -9,16 +9,16 @@ import java.io.BufferedReader
 
 object HttpRequestParser {
     fun parse(reader: BufferedReader): HttpRequest? {
-        val requestAndHeaderLines = readRequestAndHeaderLines(reader)
+        val requestAndHeaderLines = HttpRequestParser.readRequestAndHeaderLines(reader)
 
         val requestLine = requestAndHeaderLines.first()
-        val method = method(requestLine) ?: return null
-        val path = path(requestLine)
+        val method = HttpRequestParser.method(requestLine) ?: return null
+        val path = HttpRequestParser.path(requestLine)
 
         val headers = HttpRequestParser.headers(requestAndHeaderLines.drop(1))
 
         val contentLength = headers.get("Content-Length")?.toInt()
-        val content = content(reader, contentLength)
+        val content = HttpRequestParser.content(reader, contentLength)
 
         return HttpRequest(method, path, headers, content)
     }

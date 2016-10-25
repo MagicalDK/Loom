@@ -1,6 +1,8 @@
-package dk.magical.request
+package dk.magical.loom.request
 
 import com.google.common.truth.Truth
+import dk.magical.loom.request.HttpMethod
+import dk.magical.loom.request.HttpRequestParser
 import org.junit.Test
 import java.io.BufferedReader
 import java.io.StringReader

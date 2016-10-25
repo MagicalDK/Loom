@@ -1,10 +1,12 @@
-package dk.magical.routing
+package dk.magical.loom.routing
 
 import com.google.common.truth.Truth
-import dk.magical.request.HttpMethod.GET
-import dk.magical.request.HttpMethod.POST
-import dk.magical.request.HttpRequest
-import dk.magical.response.HttpResponse
+import dk.magical.loom.routing.RouteDispatcher
+import dk.magical.loom.routing.Router
+import dk.magical.loom.request.HttpMethod.GET
+import dk.magical.loom.request.HttpMethod.POST
+import dk.magical.loom.request.HttpRequest
+import dk.magical.loom.response.HttpResponse
 import net.jodah.concurrentunit.Waiter
 import org.junit.Test
 import java.io.ByteArrayOutputStream

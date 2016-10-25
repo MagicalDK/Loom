@@ -1,4 +1,4 @@
-package dk.magical
+package dk.magical.loom
 
 import org.junit.Assert.*
 import org.junit.Test

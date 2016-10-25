@@ -1,5 +1,6 @@
-package dk.magical.routing
+package dk.magical.loom.routing
 
+import dk.magical.loom.routing.Router
 import org.junit.Test
 
 /**

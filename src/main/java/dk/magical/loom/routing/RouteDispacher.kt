@@ -1,7 +1,7 @@
-package dk.magical.routing
+package dk.magical.loom.routing
 
-import dk.magical.request.HttpRequest
-import dk.magical.response.HttpResponse
+import dk.magical.loom.request.HttpRequest
+import dk.magical.loom.response.HttpResponse
 
 /**
  * Created by Christian on 20/10/2016.

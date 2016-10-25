@@ -1,4 +1,4 @@
-package dk.magical.routing
+package dk.magical.loom.routing
 
 /**
  * Created by Christian on 20/10/2016.

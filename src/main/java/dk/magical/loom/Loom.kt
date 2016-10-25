@@ -1,8 +1,8 @@
-package dk.magical
+package dk.magical.loom
 
-import dk.magical.logging.Logger
-import dk.magical.routing.RouteDispatcher
-import dk.magical.routing.Router
+import dk.magical.loom.logging.Logger
+import dk.magical.loom.routing.RouteDispatcher
+import dk.magical.loom.routing.Router
 
 /**
  * Created by Christian on 19/10/2016.

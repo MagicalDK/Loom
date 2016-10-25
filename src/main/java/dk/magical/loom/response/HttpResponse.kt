@@ -1,6 +1,6 @@
-package dk.magical.response
+package dk.magical.loom.response
 
-import dk.magical.Status
+import dk.magical.loom.Status
 import java.io.OutputStream
 import java.io.PrintWriter
 
@@ -10,6 +10,7 @@ import java.io.PrintWriter
 data class HttpResponse(private val outputStream: OutputStream) {
     private var status: Status = Status.OK
     private var body: String? = null
+    private val headers: MutableMap<String, String> = mutableMapOf()
 
     fun status(status: Status): HttpResponse {
         this.status = status
@@ -21,8 +22,18 @@ data class HttpResponse(private val outputStream: OutputStream) {
         return this
     }
 
+    fun header(key: String, value: String): HttpResponse {
+        headers.put(key, value)
+        return this
+    }
+
+    fun headers(vararg headers: Pair<String, String>): HttpResponse {
+        this.headers.putAll(headers)
+        return this
+    }
+
     fun end() {
-        val response = HttpResponseBuilder.build(status, body)
+        val response = HttpResponseBuilder.build(status, headers, body)
 
         val writer = PrintWriter(outputStream)
         response.forEach { line ->

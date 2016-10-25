@@ -1,4 +1,4 @@
-package dk.magical;
+package dk.magical.loom;
 
 /**
  * Created by Emil on 20/10/2016.

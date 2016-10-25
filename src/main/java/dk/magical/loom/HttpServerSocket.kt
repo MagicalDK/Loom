@@ -1,8 +1,8 @@
-package dk.magical
+package dk.magical.loom
 
-import dk.magical.request.HttpRequest
-import dk.magical.request.HttpRequestParser
-import dk.magical.response.HttpResponse
+import dk.magical.loom.request.HttpRequest
+import dk.magical.loom.request.HttpRequestParser
+import dk.magical.loom.response.HttpResponse
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.ServerSocket
