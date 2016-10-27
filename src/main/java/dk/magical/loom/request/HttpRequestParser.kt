@@ -18,7 +18,7 @@ object HttpRequestParser {
         val headers = HttpRequestParser.headers(requestAndHeaderLines.drop(1))
 
         val contentLength = headers.get("Content-Length")?.toInt()
-        val content = HttpRequestParser.content(reader, contentLength)
+        val content = HttpRequestParser.body(reader, contentLength)
 
         return HttpRequest(method, path, headers, content)
     }
@@ -36,18 +36,13 @@ object HttpRequestParser {
         return lines
     }
 
-    private fun content(reader: BufferedReader, contentLength: Int?): String? {
+    private fun body(reader: BufferedReader, contentLength: Int?): String? {
         if (contentLength == null)
             return null
 
-        val stringBuilder = StringBuilder()
-        for (i in 1..contentLength) {
-            val characterIndex = reader.read()
-            val characters = Character.toChars(characterIndex)
-            stringBuilder.append(characters)
-        }
-
-        return stringBuilder.toString()
+        val chars = CharArray(contentLength)
+        val numberOfChars = reader.read(chars)
+        return String(chars).substring(0, numberOfChars)
     }
 
     private fun method(requestLine: String): HttpMethod? {

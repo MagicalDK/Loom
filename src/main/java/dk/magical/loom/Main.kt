@@ -11,11 +11,11 @@ fun main(args: Array<String>) {
 
     val userRouter = Router("/user")
 
-    userRouter.get("/name") { request, response ->
+    userRouter.post("/name") { request, response ->
         println("User router:")
         println(request)
 
-        response.status(Status.OK).body("Hello Christian").end()
+        response.status(Status.OK).body("Hello Christian æøå").end()
     }
 
     loom.route(userRouter)

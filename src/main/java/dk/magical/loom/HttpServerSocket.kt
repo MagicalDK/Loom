@@ -19,7 +19,7 @@ class HttpServerSocket(port: Int) {
 
     fun listen(handler: (HttpRequest, HttpResponse) -> Unit) {
         val socket = serverSocket.accept()
-        val streamReader = InputStreamReader(socket.inputStream)
+        val streamReader = InputStreamReader(socket.inputStream, Charsets.UTF_8)
         val bufferedReader = BufferedReader(streamReader)
 
         val request = HttpRequestParser.parse(bufferedReader) ?: return

@@ -23,7 +23,7 @@ object HttpResponseBuilder {
     }
 
     private fun contentLength(body: String?): String {
-        val length = if (body == null) 0 else body.length
+        val length = if (body == null) 0 else body.toByteArray(Charsets.UTF_8).size
         return "Content-Length: ${length}"
     }
 

@@ -18,8 +18,8 @@ class HttpResponseBuilderTest {
 
     @Test
     fun shouldAddCorrectContentLength() {
-        val response = HttpResponseBuilder.build(Status.OK, mapOf(), "Hello")
-        Truth.assertThat(response).contains("Content-Length: ${"Hello".length}")
+        val response = HttpResponseBuilder.build(Status.OK, mapOf(), "Hello æøå")
+        Truth.assertThat(response).contains("Content-Length: ${"Hello æøå".toByteArray(Charsets.UTF_8).size}")
     }
 
     @Test

@@ -2,6 +2,7 @@ package dk.magical.loom.response
 
 import dk.magical.loom.Status
 import java.io.OutputStream
+import java.io.OutputStreamWriter
 import java.io.PrintWriter
 
 /**
@@ -35,7 +36,8 @@ data class HttpResponse(private val outputStream: OutputStream) {
     fun end() {
         val response = HttpResponseBuilder.build(status, headers, body)
 
-        val writer = PrintWriter(outputStream)
+        val outputStreamWriter = OutputStreamWriter(outputStream, Charsets.UTF_8)
+        val writer = PrintWriter(outputStreamWriter)
         response.forEach { line ->
             writer.println(line)
         }
