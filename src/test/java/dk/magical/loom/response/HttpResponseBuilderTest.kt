@@ -12,25 +12,25 @@ import org.junit.Test
 class HttpResponseBuilderTest {
     @Test
     fun shouldBuildStatusLine() {
-        val response = HttpResponseBuilder.build(Status.OK, mapOf(), null)
+        val response = HttpResponseBuilder().build(Status.OK, mapOf(), null)
         Truth.assertThat(response).contains("HTTP/1.1 200 OK")
     }
 
     @Test
     fun shouldAddCorrectContentLength() {
-        val response = HttpResponseBuilder.build(Status.OK, mapOf(), "Hello æøå")
+        val response = HttpResponseBuilder().build(Status.OK, mapOf(), "Hello æøå")
         Truth.assertThat(response).contains("Content-Length: ${"Hello æøå".toByteArray(Charsets.UTF_8).size}")
     }
 
     @Test
     fun shouldAddBodyLineSeperator() {
-        val response = HttpResponseBuilder.build(Status.OK, mapOf(), "Hello")
+        val response = HttpResponseBuilder().build(Status.OK, mapOf(), "Hello")
         Truth.assertThat(response).contains("")
     }
 
     @Test
     fun shouldAddBodyContent() {
-        val response = HttpResponseBuilder.build(Status.OK, mapOf(), "Hello")
+        val response = HttpResponseBuilder().build(Status.OK, mapOf(), "Hello")
         Truth.assertThat(response).contains("Hello")
     }
 }

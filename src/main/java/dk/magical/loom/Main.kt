@@ -1,13 +1,14 @@
 package dk.magical.loom
 
 import dk.magical.loom.routing.Router
+import java.util.concurrent.Executors
 
 /**
  * Created by Christian on 21/10/2016.
  */
 
 fun main(args: Array<String>) {
-    val loom = Loom(8080)
+    val loom = Loom(Executors.newCachedThreadPool())
 
     val userRouter = Router("/user")
 
@@ -20,5 +21,5 @@ fun main(args: Array<String>) {
 
     loom.route(userRouter)
 
-    loom.start()
+    loom.start(8080)
 }

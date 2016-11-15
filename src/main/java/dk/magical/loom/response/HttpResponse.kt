@@ -34,7 +34,7 @@ data class HttpResponse(private val outputStream: OutputStream) {
     }
 
     fun end() {
-        val response = HttpResponseBuilder.build(status, headers, body)
+        val response = HttpResponseBuilder().build(status, headers, body)
 
         val outputStreamWriter = OutputStreamWriter(outputStream, Charsets.UTF_8)
         val writer = PrintWriter(outputStreamWriter)

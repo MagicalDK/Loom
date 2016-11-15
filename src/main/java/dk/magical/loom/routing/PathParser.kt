@@ -1,5 +1,9 @@
 package dk.magical.loom.routing
 
+import java.net.URL
+import java.net.URLDecoder
+import java.util.regex.Pattern
+
 /**
  * Created by Christian on 20/10/2016.
  */

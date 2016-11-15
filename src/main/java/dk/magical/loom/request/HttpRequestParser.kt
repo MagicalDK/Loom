@@ -2,25 +2,29 @@ package dk.magical.loom.request
 
 import dk.magical.loom.routing.PathParser
 import java.io.BufferedReader
+import java.net.URI
+import java.nio.file.Path
 
 /**
  * Created by Christian on 18/10/2016.
  */
 
-object HttpRequestParser {
+class HttpRequestParser{
     fun parse(reader: BufferedReader): HttpRequest? {
-        val requestAndHeaderLines = HttpRequestParser.readRequestAndHeaderLines(reader)
+        val requestAndHeaderLines = readRequestAndHeaderLines(reader)
 
         val requestLine = requestAndHeaderLines.first()
-        val method = HttpRequestParser.method(requestLine) ?: return null
-        val path = HttpRequestParser.path(requestLine)
+        val method = method(requestLine) ?: return null
+        val uri = uri(requestLine)
 
-        val headers = HttpRequestParser.headers(requestAndHeaderLines.drop(1))
+        val path = uri.path
+        val queryParameters = queryParameters(uri)
+        val headers = headers(requestAndHeaderLines.drop(1))
 
         val contentLength = headers.get("Content-Length")?.toInt()
-        val content = HttpRequestParser.body(reader, contentLength)
+        val content = body(reader, contentLength)
 
-        return HttpRequest(method, path, headers, content)
+        return HttpRequest(method, path, queryParameters, headers, content, mapOf())
     }
 
     private fun readRequestAndHeaderLines(reader: BufferedReader): List<String> {
@@ -57,10 +61,25 @@ object HttpRequestParser {
         }
     }
 
-    private fun path(requestLine: String): String {
+    private fun uri(requestLine: String): URI {
         val elements = requestLine.split(" ")
-        val path = elements[1]
-        return PathParser.parse(path)
+        val path = PathParser.parse(elements[1])
+        return URI(path)
+    }
+
+    private fun queryParameters(uri: URI): Map<String, String> {
+        val map: MutableMap<String, String> = mutableMapOf()
+
+        if (uri.query == null)
+            return map
+
+        val parameters = uri.query.split("&")
+        parameters.forEach {
+            val parameter = it.split("=")
+            map[parameter[0]] = parameter[1]
+        }
+
+        return map
     }
 
     fun headers(headers: List<String>): Map<String, String> {

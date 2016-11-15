@@ -23,7 +23,7 @@ class RouteDispatcherTest {
         val waiter = Waiter()
 
         val dispatcher = RouteDispatcher()
-        val request = HttpRequest(GET, "/hello", mapOf(), null)
+        val request = HttpRequest(GET, "/hello", mapOf(), mapOf(), null, mapOf())
 
         dispatcher.dispatch(request, response, listOf()) { message ->
             Truth.assertThat(message).isEqualTo("No handler for: ${request.method.name} ${request.path}.")
@@ -38,7 +38,7 @@ class RouteDispatcherTest {
         val waiter = Waiter()
 
         val dispatcher = RouteDispatcher()
-        val request = HttpRequest(GET, "/hello", mapOf(), null)
+        val request = HttpRequest(GET, "/hello", mapOf(), mapOf(), null, mapOf())
 
         val router = Router("/hello")
         router.get("") { request, response ->
@@ -56,7 +56,7 @@ class RouteDispatcherTest {
         val waiter = Waiter()
 
         val dispatcher = RouteDispatcher()
-        val request = HttpRequest(GET, "/hello/peter", mapOf(), null)
+        val request = HttpRequest(GET, "/hello/peter", mapOf(), mapOf(), null, mapOf())
 
         val router = Router("/hello/peter")
         router.get("") { request, response ->
@@ -74,7 +74,7 @@ class RouteDispatcherTest {
         val waiter = Waiter()
 
         val dispatcher = RouteDispatcher()
-        val request = HttpRequest(GET, "/hello/peter", mapOf(), null)
+        val request = HttpRequest(GET, "/hello/peter", mapOf(), mapOf(), null, mapOf())
 
         val router = Router("/hello")
         router.get("/peter") { request, response ->
@@ -92,7 +92,7 @@ class RouteDispatcherTest {
         val waiter = Waiter()
 
         val dispatcher = RouteDispatcher()
-        val request = HttpRequest(GET, "/hello/peter/name", mapOf(), null)
+        val request = HttpRequest(GET, "/hello/peter/name", mapOf(), mapOf(), null, mapOf())
 
         val router = Router("/hello")
         router.get("/peter/name") { request, response ->
@@ -110,7 +110,7 @@ class RouteDispatcherTest {
         val waiter = Waiter()
 
         val dispatcher = RouteDispatcher()
-        val request = HttpRequest(POST, "/hello", mapOf(), null)
+        val request = HttpRequest(POST, "/hello", mapOf(), mapOf(), null, mapOf())
 
         val router = Router("/hello")
         router.get("") { request, response -> }
@@ -128,10 +128,10 @@ class RouteDispatcherTest {
         val waiter = Waiter()
 
         val dispatcher = RouteDispatcher()
-        val request = HttpRequest(GET, "/hello/user", mapOf(), null)
+        val request = HttpRequest(GET, "/hello/user", mapOf(), mapOf(), null, mapOf())
 
         val helloRouter = Router("/hello")
-        helloRouter.get("") { request, response -> }
+        helloRouter.get("") { request, response -> fail("Wrong request") }
 
         val helloUserRouter = Router("/hello/user")
         helloUserRouter.get("") { request, response ->
@@ -144,10 +144,12 @@ class RouteDispatcherTest {
         waiter.await(1000)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun ShouldRejectAddingExistingRouteToDifferentRouter() {
+        val waiter = Waiter()
+
         val dispatcher = RouteDispatcher()
-        val request = HttpRequest(GET, "/hello/user", mapOf(), null)
+        val request = HttpRequest(GET, "/hello/user", mapOf(), mapOf(), null, mapOf())
 
         val routerOne = Router("/hello")
         routerOne.get("user") { request, response -> }
@@ -155,6 +157,67 @@ class RouteDispatcherTest {
         val routerTwo = Router("/hello/user")
         routerTwo.get("") { request, response -> }
 
-        dispatcher.dispatch(request, response, listOf(routerOne, routerTwo)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(routerOne, routerTwo)) { message ->
+            Truth.assertThat(message).isEqualTo("More than one router with the path: /hello/user")
+            waiter.resume()
+        }
+
+        waiter.await(1000)
+    }
+
+    @Test
+    fun shouldAllowGenericUrls() {
+        val waiter = Waiter()
+        val dispatcher = RouteDispatcher()
+
+        val router = Router("/hello")
+        router.get("/{user}/name") { request, response ->
+            Truth.assertThat(request).isEqualTo(request)
+            waiter.resume()
+        }
+
+        var request = HttpRequest(GET, "/hello/user/name", mapOf(), mapOf(), null, mapOf())
+        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+
+        request = HttpRequest(GET, "/hello/player/name", mapOf(), mapOf(), null, mapOf())
+        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+
+        waiter.await(1000, 2)
+    }
+
+    @Test
+    fun shouldGetUrlParameters() {
+        val waiter = Waiter()
+
+        val dispatcher = RouteDispatcher()
+        val request = HttpRequest(GET, "/hello/user/Peter", mapOf(), mapOf(), null, mapOf())
+
+        val router = Router("/hello")
+        router.get("/user/{name}") { request, response ->
+            Truth.assertThat(request.urlParameters).containsExactly("name", "Peter")
+            waiter.resume()
+        }
+
+        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+
+        waiter.await(1000)
+    }
+
+    @Test
+    fun shouldgetMultipleUrlParameters() {
+        val waiter = Waiter()
+
+        val dispatcher = RouteDispatcher()
+        val request = HttpRequest(GET, "/hello/user/12345/Peter", mapOf(), mapOf(), null, mapOf())
+
+        val router = Router("/hello")
+        router.get("/user/{userId}/{name}") { request, response ->
+            Truth.assertThat(request.urlParameters).containsExactly("userId", "12345", "name", "Peter")
+            waiter.resume()
+        }
+
+        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+
+        waiter.await(1000)
     }
 }

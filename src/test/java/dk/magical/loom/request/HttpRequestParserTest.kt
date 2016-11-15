@@ -14,35 +14,35 @@ class HttpRequestParserTest {
     @Test
     fun shouldParseGetMethod() {
         val reader = reader(listOf("GET / HTTP/1.1"))
-        val httpRequest = HttpRequestParser.parse(reader)
+        val httpRequest = HttpRequestParser().parse(reader)
         Truth.assertThat(httpRequest?.method).isEqualTo(HttpMethod.GET)
     }
 
     @Test
     fun shouldParsePostMethod() {
         val reader = reader(listOf("POST / HTTP/1.1"))
-        val httpRequest = HttpRequestParser.parse(reader)
+        val httpRequest = HttpRequestParser().parse(reader)
         Truth.assertThat(httpRequest?.method).isEqualTo(HttpMethod.POST)
     }
 
     @Test
     fun shouldParsePutMethod() {
         val reader = reader(listOf("PUT / HTTP/1.1"))
-        val httpRequest = HttpRequestParser.parse(reader)
+        val httpRequest = HttpRequestParser().parse(reader)
         Truth.assertThat(httpRequest?.method).isEqualTo(HttpMethod.PUT)
     }
 
     @Test
     fun shouldParseDeleteMethod() {
         val reader = reader(listOf("DELETE / HTTP/1.1"))
-        val httpRequest = HttpRequestParser.parse(reader)
+        val httpRequest = HttpRequestParser().parse(reader)
         Truth.assertThat(httpRequest?.method).isEqualTo(HttpMethod.DELETE)
     }
 
     @Test
     fun shouldParsePath() {
         val reader = reader(listOf("POST user/12345/name/ HTTP/1.1"))
-        val httpRequest = HttpRequestParser.parse(reader)
+        val httpRequest = HttpRequestParser().parse(reader)
         Truth.assertThat(httpRequest?.path).isEqualTo("/user/12345/name")
     }
 
@@ -56,7 +56,7 @@ class HttpRequestParserTest {
                 "Cache-Control: no-cache")
 
         val reader = reader(request)
-        val httpRequest = HttpRequestParser.parse(reader)
+        val httpRequest = HttpRequestParser().parse(reader)
         Truth.assertThat(httpRequest?.headers?.size).isEqualTo(4)
 
         Truth.assertThat(httpRequest?.headers).containsEntry("Host", "localhost:8080")
@@ -78,8 +78,24 @@ class HttpRequestParserTest {
                 "Hello World")
 
         val reader = reader(request)
-        val httpRequest = HttpRequestParser.parse(reader)
+        val httpRequest = HttpRequestParser().parse(reader)
         Truth.assertThat(httpRequest?.body).isEqualTo("Hello World")
+    }
+
+    @Test
+    fun shouldParseQueryParameters() {
+        val request = listOf<String>(
+                "POST /hello?name=Peter&age=35 HTTP/1.1",
+                "Host: localhost:8080",
+                "Connection: keep-alive",
+                "Postman-Token: 59998382-9aca-ada6-2550-5a29b26da58a",
+                "Cache-Control: no-cache")
+
+        val reader = reader(request)
+        val httpRequest = HttpRequestParser().parse(reader)
+
+        Truth.assertThat(httpRequest?.queryParameters).containsEntry("name", "Peter")
+        Truth.assertThat(httpRequest?.queryParameters).containsEntry("age", "35")
     }
 
     private fun reader(request: List<String>): BufferedReader {

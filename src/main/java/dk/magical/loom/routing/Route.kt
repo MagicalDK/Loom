@@ -7,7 +7,8 @@ import dk.magical.loom.response.HttpResponse
 /**
  * Created by Christian on 20/10/2016.
  */
-data class Route(val method: HttpMethod, val path: String, val handler: (HttpRequest, HttpResponse) -> Unit) {
+data class Route(val method: HttpMethod, val path: String, val handler: (request: HttpRequest, response: HttpResponse) -> Unit) {
+
     fun fullPath(basePath: String): String {
         return "${basePath}${path}"
     }
@@ -16,4 +17,24 @@ data class Route(val method: HttpMethod, val path: String, val handler: (HttpReq
         val route = other as? Route ?: return false
         return method == route.method && path == route.path
     }
+
+    fun matchers(basePath: String): List<(String, HttpMethod) -> Match> {
+        val elements = fullPath(basePath).removePrefix("/").split("/")
+        return elements.map { element ->
+            if (element.startsWith("{") && element.endsWith("}")) {
+                { path: String, method: HttpMethod ->
+                    val match = this.method == method
+                    val key = element.removePrefix("{").removeSuffix("}")
+                    Match(match, key, path)
+                }
+            } else {
+                { path: String, method: HttpMethod ->
+                    val match = path == element && this.method == method
+                    Match(match, path, null)
+                }
+            }
+        }
+    }
 }
+
+data class Match(val match: Boolean, val Key: String, val value: String?)

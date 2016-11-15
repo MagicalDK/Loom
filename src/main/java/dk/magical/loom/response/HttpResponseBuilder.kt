@@ -5,11 +5,11 @@ import dk.magical.loom.Status
 /**
  * Created by Christian on 25/10/2016.
  */
-object HttpResponseBuilder {
+class HttpResponseBuilder {
     fun build(status: Status, headers: Map<String, String>, body: String?): List<String> {
         val list: MutableList<String> = mutableListOf()
-        list.add(HttpResponseBuilder.statusLine(status))
-        list.add(HttpResponseBuilder.contentLength(body))
+        list.add(statusLine(status))
+        list.add(contentLength(body))
         list.addAll(headerLiners(headers))
         list.add("")
         if (body != null)
