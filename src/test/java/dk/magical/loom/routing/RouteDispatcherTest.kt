@@ -1,8 +1,6 @@
 package dk.magical.loom.routing
 
 import com.google.common.truth.Truth
-import dk.magical.loom.routing.RouteDispatcher
-import dk.magical.loom.routing.Router
 import dk.magical.loom.request.HttpMethod.GET
 import dk.magical.loom.request.HttpMethod.POST
 import dk.magical.loom.request.HttpRequest
@@ -145,27 +143,6 @@ class RouteDispatcherTest {
     }
 
     @Test
-    fun ShouldRejectAddingExistingRouteToDifferentRouter() {
-        val waiter = Waiter()
-
-        val dispatcher = RouteDispatcher()
-        val request = HttpRequest(GET, "/hello/user", mapOf(), mapOf(), null, mapOf())
-
-        val routerOne = Router("/hello")
-        routerOne.get("user") { request, response -> }
-
-        val routerTwo = Router("/hello/user")
-        routerTwo.get("") { request, response -> }
-
-        dispatcher.dispatch(request, response, listOf(routerOne, routerTwo)) { message, response ->
-            Truth.assertThat(message).isEqualTo("More than one router with the path: /hello/user")
-            waiter.resume()
-        }
-
-        waiter.await(1000)
-    }
-
-    @Test
     fun shouldAllowGenericUrls() {
         val waiter = Waiter()
         val dispatcher = RouteDispatcher()
@@ -214,6 +191,32 @@ class RouteDispatcherTest {
         router.get("/user/{userId}/{name}") { request, response ->
             Truth.assertThat(request.urlParameters).containsExactly("userId", "12345", "name", "Peter")
             waiter.resume()
+        }
+
+        dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }
+
+        waiter.await(1000)
+    }
+
+    @Test
+    fun shouldAllowGetAllAndGetOne() {
+        val waiter = Waiter()
+
+        val dispatcher = RouteDispatcher()
+        val request = HttpRequest(GET, "/users", mapOf(), mapOf(), null, mapOf())
+
+        val router = Router("/users")
+
+        router.get("/") { request, response ->
+            waiter.resume()
+        }
+
+        router.post("/") { request, response ->
+            fail("Wrong router")
+        }
+
+        router.get("/{userId}") { request, response ->
+            fail("Wrong router")
         }
 
         dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }

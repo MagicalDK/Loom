@@ -8,7 +8,6 @@ import dk.magical.loom.response.HttpResponse
  */
 class RouteDispatcher() {
     fun dispatch(request: HttpRequest, response: HttpResponse, routers: List<Router>, error: (message: String, HttpResponse) -> Unit) {
-        validateRouters(routers, error, response)
 
         val routeDetails = findRoute(request, routers)
         if (routeDetails != null) {
