@@ -2,6 +2,7 @@ package dk.magical.loom
 
 import dk.magical.loom.logging.Logger
 import dk.magical.loom.request.HttpRequestParser
+import dk.magical.loom.response.HttpResponse
 import dk.magical.loom.routing.RouteDispatcher
 import dk.magical.loom.routing.Router
 import java.util.concurrent.ExecutorService
@@ -19,16 +20,14 @@ class Loom(private val executorService: ExecutorService) {
         dispatcher = RouteDispatcher()
     }
 
-    fun start(port: Int) {
+    fun start(port: Int, error: (String, HttpResponse) -> Unit) {
         val server = HttpServerSocket(executorService, HttpRequestParser(), port)
         Logger.log("Listen for connection on port: ${port}")
 
         executorService.execute {
             while (true) {
                 server.listen { request, response ->
-                    dispatcher.dispatch(request, response,  routers) { message ->
-                        Logger.log("ERROR - ${message}")
-                    }
+                    dispatcher.dispatch(request, response,  routers, error)
                 }
             }
         }

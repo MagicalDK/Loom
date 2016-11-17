@@ -7,25 +7,25 @@ import dk.magical.loom.response.HttpResponse
  * Created by Christian on 20/10/2016.
  */
 class RouteDispatcher() {
-    fun dispatch(request: HttpRequest, response: HttpResponse, routers: List<Router>, error: (message: String) -> Unit) {
-        validateRouters(routers, error)
+    fun dispatch(request: HttpRequest, response: HttpResponse, routers: List<Router>, error: (message: String, HttpResponse) -> Unit) {
+        validateRouters(routers, error, response)
 
         val routeDetails = findRoute(request, routers)
         if (routeDetails != null) {
             request.urlParameters = routeDetails.second
             routeDetails.first.handler(request, response)
         } else {
-            error("No handler for: ${request.method.name} ${request.path}.")
+            error("No handler for: ${request.method.name} ${request.path}.", response)
         }
     }
 
-    private fun validateRouters(routers: List<Router>, error: (message: String) -> Unit) {
+    private fun validateRouters(routers: List<Router>, error: (message: String, HttpResponse) -> Unit, response: HttpResponse) {
         val knownPaths: MutableList<String> = mutableListOf()
         routers.forEach { router ->
             router.routes.forEach { route ->
                 val fullPath = route.fullPath(router.basePath)
                 if (knownPaths.contains(fullPath))
-                    error("More than one router with the path: ${fullPath}")
+                    error("More than one router with the path: ${fullPath}", response)
                 else
                     knownPaths.add(fullPath)
             }

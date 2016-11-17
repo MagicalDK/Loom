@@ -25,7 +25,7 @@ class RouteDispatcherTest {
         val dispatcher = RouteDispatcher()
         val request = HttpRequest(GET, "/hello", mapOf(), mapOf(), null, mapOf())
 
-        dispatcher.dispatch(request, response, listOf()) { message ->
+        dispatcher.dispatch(request, response, listOf()) { message, response ->
             Truth.assertThat(message).isEqualTo("No handler for: ${request.method.name} ${request.path}.")
             waiter.resume()
         }
@@ -46,7 +46,7 @@ class RouteDispatcherTest {
             waiter.resume()
         }
 
-        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }
 
         waiter.await(1000)
     }
@@ -64,7 +64,7 @@ class RouteDispatcherTest {
             waiter.resume()
         }
 
-        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }
 
         waiter.await(1000)
     }
@@ -82,7 +82,7 @@ class RouteDispatcherTest {
             waiter.resume()
         }
 
-        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }
 
         waiter.await(1000)
     }
@@ -100,7 +100,7 @@ class RouteDispatcherTest {
             waiter.resume()
         }
 
-        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }
 
         waiter.await(1000)
     }
@@ -115,7 +115,7 @@ class RouteDispatcherTest {
         val router = Router("/hello")
         router.get("") { request, response -> }
 
-        dispatcher.dispatch(request, response, listOf(router)) { message ->
+        dispatcher.dispatch(request, response, listOf(router)) { message, response ->
             Truth.assertThat(message).isEqualTo("No handler for: ${request.method.name} ${request.path}.")
             waiter.resume()
         }
@@ -139,7 +139,7 @@ class RouteDispatcherTest {
             waiter.resume()
         }
 
-        dispatcher.dispatch(request, response, listOf(helloRouter, helloUserRouter)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(helloRouter, helloUserRouter)) { message, response -> fail(message) }
 
         waiter.await(1000)
     }
@@ -157,7 +157,7 @@ class RouteDispatcherTest {
         val routerTwo = Router("/hello/user")
         routerTwo.get("") { request, response -> }
 
-        dispatcher.dispatch(request, response, listOf(routerOne, routerTwo)) { message ->
+        dispatcher.dispatch(request, response, listOf(routerOne, routerTwo)) { message, response ->
             Truth.assertThat(message).isEqualTo("More than one router with the path: /hello/user")
             waiter.resume()
         }
@@ -177,10 +177,10 @@ class RouteDispatcherTest {
         }
 
         var request = HttpRequest(GET, "/hello/user/name", mapOf(), mapOf(), null, mapOf())
-        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }
 
         request = HttpRequest(GET, "/hello/player/name", mapOf(), mapOf(), null, mapOf())
-        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }
 
         waiter.await(1000, 2)
     }
@@ -198,7 +198,7 @@ class RouteDispatcherTest {
             waiter.resume()
         }
 
-        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }
 
         waiter.await(1000)
     }
@@ -216,7 +216,7 @@ class RouteDispatcherTest {
             waiter.resume()
         }
 
-        dispatcher.dispatch(request, response, listOf(router)) { fail(it) }
+        dispatcher.dispatch(request, response, listOf(router)) { message, response -> fail(message) }
 
         waiter.await(1000)
     }

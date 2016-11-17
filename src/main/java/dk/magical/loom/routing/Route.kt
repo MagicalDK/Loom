@@ -23,7 +23,7 @@ data class Route(val method: HttpMethod, val path: String, val handler: (request
         return elements.map { element ->
             if (element.startsWith("{") && element.endsWith("}")) {
                 { path: String, method: HttpMethod ->
-                    val match = this.method == method
+                    val match = path.isNotEmpty() && this.method == method
                     val key = element.removePrefix("{").removeSuffix("}")
                     Match(match, key, path)
                 }
