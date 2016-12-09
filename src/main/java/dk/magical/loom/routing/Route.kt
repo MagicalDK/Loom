@@ -18,7 +18,7 @@ data class Route(val method: HttpMethod, val path: String, val handler: (request
         return method == route.method && path == route.path
     }
 
-    fun matchers(basePath: String): List<(String, HttpMethod) -> Match> {
+    fun conditions(basePath: String): List<(String, HttpMethod) -> Match> {
         val elements = fullPath(basePath).removePrefix("/").split("/")
         return elements.map { element ->
             if (element.startsWith("{") && element.endsWith("}")) {

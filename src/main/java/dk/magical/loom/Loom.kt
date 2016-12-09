@@ -1,9 +1,12 @@
 package dk.magical.loom
 
 import dk.magical.loom.logging.Logger
+import dk.magical.loom.middleware.Middleware
+import dk.magical.loom.request.HttpMethod
+import dk.magical.loom.request.HttpRequest
 import dk.magical.loom.request.HttpRequestParser
 import dk.magical.loom.response.HttpResponse
-import dk.magical.loom.routing.RouteDispatcher
+import dk.magical.loom.routing.PathParser
 import dk.magical.loom.routing.Router
 import java.util.concurrent.ExecutorService
 
@@ -13,11 +16,13 @@ import java.util.concurrent.ExecutorService
 
 class Loom(private val executorService: ExecutorService) {
     private val routers: MutableList<Router>
-    private val dispatcher: RouteDispatcher
+    private val middleware: MutableList<Middleware>
+    private val dispatcher: Dispatcher
 
     init {
         routers = mutableListOf()
-        dispatcher = RouteDispatcher()
+        middleware = mutableListOf()
+        dispatcher = Dispatcher()
     }
 
     fun start(port: Int, error: (String, HttpResponse) -> Unit) {
@@ -27,7 +32,7 @@ class Loom(private val executorService: ExecutorService) {
         executorService.execute {
             while (true) {
                 server.listen { request, response ->
-                    dispatcher.dispatch(request, response,  routers, error)
+                    dispatcher.dispatch(request, response,  routers, middleware, error)
                 }
             }
         }
@@ -35,5 +40,10 @@ class Loom(private val executorService: ExecutorService) {
 
     fun route(router: Router) {
         routers.add(router)
+    }
+
+    fun use(vararg methods: HttpMethod, path: String, callback: (request: HttpRequest, response: HttpResponse, next: () -> Unit) -> Unit) {
+        val middleware = Middleware(methods.asList(), PathParser.parse(path), callback)
+        this.middleware.add(middleware)
     }
 }
