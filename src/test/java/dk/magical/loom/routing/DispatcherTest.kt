@@ -2,6 +2,7 @@ package dk.magical.loom.routing
 
 import com.google.common.truth.Truth
 import dk.magical.loom.Dispatcher
+import dk.magical.loom.Status
 import dk.magical.loom.middleware.Middleware
 import dk.magical.loom.request.HttpMethod.GET
 import dk.magical.loom.request.HttpMethod.POST
@@ -304,6 +305,34 @@ class DispatcherTest {
 
         val firstMiddleware = Middleware(listOf(GET), "/users/Peter") { request, response, next -> next() }
         val secondMiddleware = Middleware(listOf(GET), "/users/Peter") { request, response, next -> next() }
+
+        dispatcher.dispatch(request, response, listOf(router), listOf(firstMiddleware, secondMiddleware)) { message, response -> fail(message) }
+
+        waiter.await(1000)
+    }
+
+    @Test
+    fun shouldRespondFromMiddleware() {
+        val waiter = Waiter()
+
+        val dispatcher = Dispatcher()
+        val request = HttpRequest(GET, "/users/Peter", mapOf(), mapOf(), null, mapOf())
+
+        val outputStream = ByteArrayOutputStream()
+        val response = HttpResponse(outputStream)
+
+        val router = Router("/users")
+        router.get("/Peter") { request, response -> fail("Should not hit router") }
+
+        val firstMiddleware = Middleware(listOf(GET), "/users/Peter") { request, response, next -> next() }
+        val secondMiddleware = Middleware(listOf(GET), "/users/Peter") { request, response, next ->
+            response.status(Status.CREATED).body("Hello Peter").end()
+
+            val byteArray = outputStream.toByteArray()
+            val output = String(byteArray)
+            Truth.assertThat(output).isEqualTo("HTTP/1.1 201 Created\n" + "Content-Length: ${"Hello Peter".length}\n" + "\n" + "Hello Peter\n")
+            waiter.resume()
+        }
 
         dispatcher.dispatch(request, response, listOf(router), listOf(firstMiddleware, secondMiddleware)) { message, response -> fail(message) }
 

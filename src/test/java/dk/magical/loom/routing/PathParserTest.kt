@@ -22,13 +22,4 @@ class PathParserTest {
         val parsedPath = PathParser.parse("/user/id/name/")
         Truth.assertThat(parsedPath).isEqualTo("/user/id/name")
     }
-
-    @Test
-    fun test() {
-        val uri = URI("/user/name/123?name=Christian&age=23")
-        //val url = URL("/user/name/123?name=Christian&age=23")
-
-        println(uri.path)
-        //println(url.query)
-    }
 }
