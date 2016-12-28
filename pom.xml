@@ -6,7 +6,7 @@
 
     <groupId>dk.magical</groupId>
     <artifactId>Loom</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.0</version>
 
     <name>Loom</name>
     <description>HTTP server made easy</description>
