@@ -1,5 +1,7 @@
 # Loom
 
+A minimalistic Kotlin web framework.
+
 ## Get started
 
 #### Maven
