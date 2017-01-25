@@ -10,9 +10,12 @@ A minimalistic Kotlin web framework.
 <dependency>
     <groupId>dk.magical</groupId>
     <artifactId>Loom</artifactId>
-    <version>1.1.0</version>
+    <version>LATEST</version>
 </dependency>
 ```
+#### Loom
+
+
 
 ## Routers
 
