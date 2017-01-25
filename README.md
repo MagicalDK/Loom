@@ -76,8 +76,10 @@ router.get("/name/{name}") { request, response ->
 The request contains the properties:
 
 - method: The request method, ex: GET, POST
-- urlParameters: values from the URL, ex: /users/name/{name}, {name} defines the name url parameter.
-- 
+- urlParameters: Values from the URL, ex: /users/name/{name}, {name} defines the name url parameter.
+- queryParameters: Query parameters, ex: /users?name=Peter
+- headers: The key value headers
+- body: The optional request body
 
 ```kotlin
 val method = request.method
