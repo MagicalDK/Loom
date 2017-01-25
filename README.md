@@ -15,7 +15,13 @@ A minimalistic Kotlin web framework.
 ```
 #### Loom
 
+The Loom framework use threads from the ExecutorService.  
+Use the Executors static creator methods to easily provide the ExecutorService.
 
+##### Example
+```kotlin
+val loom = Loom(Executors.newCachedThreadPool())
+```
 
 ## Routers
 
