@@ -44,7 +44,28 @@ router.put("/") { request, response -> }
 router.delete("/") { request, response -> }
 ```
 #### URL
+```kotlin
+val router = Router("/users")
 
+router.get("/name")
+```
+Will catch the GET requests send to: "/users/name"
+
+#### URL-parameters
+```kotlin
+val router = Router("/users")
+
+router.get("/name/{name}")
+```
+Will catch the GET requests send to: "/users/name/**name**"
+Where **name** match everything.
+
+The URL-parameters chan be accessed in the handler using the request:
+```kotlin
+router.get("/name/{name}") { request, response ->
+    val name = request.urlParameters["name"]
+}
+```
 ## Middleware
 
 
