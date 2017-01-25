@@ -71,6 +71,24 @@ router.get("/name/{name}") { request, response ->
     val name = request.urlParameters["name"]
 }
 ```
+
+#### Request
+
+
+
+#### Response
+The response have the methods:
+
+- status: Set the response http-status.
+- header: Add the header to the response.
+- headers: Add multiple headers to the response.
+- body: Set the response body.
+- end: Send the response.
+
+```kotlin
+response.status(Status.OK).header("name", "Peter").body("Body").end()
+```
+
 ## Middleware
 
 Middleware will catch a request before a Router.  
@@ -98,6 +116,4 @@ loom.use(HttpMethod.GET, HttpMethod.POST, path = "/users/name") { request, respo
     next()
 }
 ```
-
-#### Response
 
